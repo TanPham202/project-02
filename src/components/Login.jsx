@@ -27,7 +27,7 @@ const Login = () => {
             return;
         }
         setLoadingAPI(true);
-        let res = await loginAPI(email, password);
+        let res = await loginAPI(email.trim(), password);
         if(res && res.token){
             loginContext(email, res.token);
             toast.success("Log in successed");
@@ -44,6 +44,12 @@ const Login = () => {
         navigate("/");
     }
 
+    const handlePressEnter = (e) => {
+        if (e && e.key === 'Enter'){
+            handLogin();
+        }
+    }
+
     return (
         <>
             <div className="login-container col-12 col-sm-4">
@@ -52,7 +58,12 @@ const Login = () => {
                 <input type="text" placeholder="Email or username..." value={email} onChange={(e) => setEmail(e.target.value)} />
                 <div className="input-2">
                     <input type={isShowPassword === true ? "text" : "password"} placeholder="Password..." value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <i className={isShowPassword === true ? "fa-solid fa-eye" : "fa-solid fa-eye-slash"} onClick={(e) => setIsShowPassword(!isShowPassword)}></i>
+                    <input 
+                        type={isShowPassword === true ? "text" : "password"} 
+                        placeholder="Password..." value={password} 
+                        onChange={(e) => setPassword(e.target.value)} 
+                        onKeyDown={(e) => handlePressEnter(e)}
+                    />
                 </div>
                 <button className={email && password ? "active" : ""} disabled={(email && password) ? false : true} onClick={() => handLogin()}> 
                     {loadingAPI && <i className="fa-solid fa-sync fa-spin"></i>} 
