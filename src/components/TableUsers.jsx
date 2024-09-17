@@ -8,6 +8,9 @@ import _ from 'lodash';
 import ModalConfirm from './ModalConfirm';
 import './TableUser.scss';
 import { debounce } from 'lodash';
+import { CSVLink } from 'react-csv';
+import Papa from 'papaparse';
+import { toast } from 'react-toastify';
 
 const TableUsers = (props) => {
 
@@ -24,6 +27,8 @@ const TableUsers = (props) => {
 
     const [sortBy, setSortBy] = useState("");
     const [sortField, setSortField] = useState("");
+
+    const [dataExport, setDataExport] = useState([]);
 
     useEffect(() => {
         getUsers(1);
@@ -94,10 +99,87 @@ const TableUsers = (props) => {
         }
     }, 500) 
 
+    const getUserExport = (event, done) => {
+        let result = [];
+        if(listUsers && listUsers.length > 0){
+            result.push(["Id", "Email", "First name", "Last name"]);
+            listUsers.map((item, index) => {
+                let arr = [];
+                arr[0] = item.id;
+                arr[1] = item.email;
+                arr[2] = item.first_name;
+                arr[3] = item.last_name;
+                result.push(arr);
+            })
+            setDataExport(result);
+            done();
+        }
+    }
+
+    const handleImportCSV = (e) => {
+        if(e.target && e.target.files && e.target.files[0]){
+            let file = e.target.files[0];
+            if(file.type !== "text/csv"){
+                toast.error("Only accept CSV files!!!")
+                return;
+            }
+            Papa.parse(file, {
+                complete: function (results){
+                    let rawCSV = results.data;
+                    if(rawCSV.length > 0){
+                        if(rawCSV[0] && rawCSV[0].length === 3){
+                            if(rawCSV[0][0] !== "email" || rawCSV[0][1] !== "first_name" || rawCSV[0][2] !== "last_name"){
+                                toast.error("Wrong format Header CSV file!")
+                            }
+                            else{
+                                let result = [];
+                                rawCSV.map((item, index) => {
+                                    let obj = {};
+                                    if(index > 0 && item.length === 3){
+                                        obj.email = item[0];
+                                        obj.first_name = item[1];
+                                        obj.last_name = item[2];
+                                        result.push(obj);
+                                    }
+                                })
+                                let cloneListUsers = _.cloneDeep(listUsers);
+                                cloneListUsers = cloneListUsers.concat(result);
+                                setListUsers(cloneListUsers);
+                            }
+                        } 
+                        else{
+                            toast.error("Wrong format CSV file!")
+                        }
+                    } 
+                    else{
+                        toast.error("Not found data on CSV file!")
+                    }
+                }
+            })
+        }
+    }
+
     return (
         <>
             <div className='my-3 add-new'>
-                <span> <b> List Users: </b> </span>
+                <div className='group-btns'>
+                    <>
+                        <label htmlFor='test' className='btn btn-warning'> 
+                            <i className='fa-solid fa-file-import'></i> 
+                            Import 
+                        </label>
+                        <input id="test" type='file' hidden onChange={(e) => handleImportCSV(e)} />
+                    </>
+                    <>
+                        <CSVLink filename={"user.csv"} className='btn btn-primary' data={dataExport} onClick={getUserExport} asyncOnClick={true}> 
+                            <i className='fa-solid fa-file-arrow-down'></i> 
+                            Export 
+                        </CSVLink>
+                    </>
+                    <button className='btn btn-success' onClick={() => setIsShowModalAddNew(true)}> 
+                        Add new user 
+                    </button>
+                </div>
                 <button className='btn btn-success' onClick={() => setIsShowModalAddNew(true)}> 
                     Add new user 
                 </button>
