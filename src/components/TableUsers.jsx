@@ -162,6 +162,7 @@ const TableUsers = (props) => {
     return (
         <>
             <div className='my-3 add-new'>
+                <span> <b> List Users: </b> </span>
                 <div className='group-btns'>
                     <>
                         <label htmlFor='test' className='btn btn-warning'> 
@@ -180,9 +181,6 @@ const TableUsers = (props) => {
                         Add new user 
                     </button>
                 </div>
-                <button className='btn btn-success' onClick={() => setIsShowModalAddNew(true)}> 
-                    Add new user 
-                </button>
             </div>
             <div className='col-4 my-3'>
                 <input className='form-control' placeholder='Search user by email...' onChange={(e) => handleSearch(e)} />
