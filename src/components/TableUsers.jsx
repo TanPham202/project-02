@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import Table from 'react-bootstrap/Table';
 import { fetchAllUser } from '../services/UserService';
 import ReactPaginate from 'react-paginate';
@@ -8,6 +7,7 @@ import ModalEditUser from './ModalEditUser';
 import _ from 'lodash';
 import ModalConfirm from './ModalConfirm';
 import './TableUser.scss';
+import { debounce } from 'lodash';
 
 const TableUsers = (props) => {
 
@@ -83,6 +83,17 @@ const TableUsers = (props) => {
         setListUsers(cloneListUsers);
     }
 
+    const handleSearch = debounce((e) => {
+        let term = e.target.value;
+        if (term){
+            let cloneListUsers = _.cloneDeep(listUsers);
+            cloneListUsers = cloneListUsers.filter(item => item.email.includes(term));
+            setListUsers(cloneListUsers);
+        } else{
+            getUsers(1);
+        }
+    }, 500) 
+
     return (
         <>
             <div className='my-3 add-new'>
@@ -90,6 +101,9 @@ const TableUsers = (props) => {
                 <button className='btn btn-success' onClick={() => setIsShowModalAddNew(true)}> 
                     Add new user 
                 </button>
+            </div>
+            <div className='col-4 my-3'>
+                <input className='form-control' placeholder='Search user by email...' onChange={(e) => handleSearch(e)} />
             </div>
             <Table striped bordered hover>
                 <thead>
