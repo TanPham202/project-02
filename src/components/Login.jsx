@@ -1,10 +1,42 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { loginAPI } from "../services/UserService";
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const navigate = useNavigate();
+
+    const [email, setEmail] = useState("eve.holt@reqres.in");
+    const [password, setPassword] = useState("cityslicka");
     const [isShowPassword, setIsShowPassword] = useState(false);
+    const [loadingAPI, setLoadingAPI] = useState(false);
+
+    useEffect(() => {
+        let token = localStorage.getItem("token")
+        if(token){
+            navigate("/");
+        }
+    }, [])
+
+    const handLogin = async() => {
+        if(!email || !password){
+            toast.error("Missing!");
+            return;
+        }
+        setLoadingAPI(true);
+        let res = await loginAPI(email, password);
+        if(res && res.token){
+            localStorage.setItem("token", res.token);
+            toast.success("Log in successed");
+            navigate("/");
+        } else{
+            if(res && res.status === 400){
+                toast.error(res.data.error);
+            }
+        }
+        setLoadingAPI(false);
+    }
 
     return (
         <>
@@ -16,8 +48,9 @@ const Login = () => {
                     <input type={isShowPassword === true ? "text" : "password"} placeholder="Password..." value={password} onChange={(e) => setPassword(e.target.value)} />
                     <i className={isShowPassword === true ? "fa-solid fa-eye" : "fa-solid fa-eye-slash"} onClick={(e) => setIsShowPassword(!isShowPassword)}></i>
                 </div>
-                <button className={email && password ? "active" : ""} disabled={email && password ? false : true}> 
-                    Log in 
+                <button className={email && password ? "active" : ""} disabled={(email && password) ? false : true} onClick={() => handLogin()}> 
+                    {loadingAPI && <i className="fa-solid fa-sync fa-spin"></i>} 
+                    &nbsp; Log in
                 </button>
                 <div className="back"> 
                     <i className="fa-solid fa-angles-left"></i> 
