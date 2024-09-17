@@ -97,7 +97,7 @@ const TableUsers = (props) => {
         } else{
             getUsers(1);
         }
-    }, 500) 
+    }, 500)
 
     const getUserExport = (event, done) => {
         let result = [];
@@ -130,7 +130,7 @@ const TableUsers = (props) => {
                         if(rawCSV[0] && rawCSV[0].length === 3){
                             if(rawCSV[0][0] !== "email" || rawCSV[0][1] !== "first_name" || rawCSV[0][2] !== "last_name"){
                                 toast.error("Wrong format Header CSV file!")
-                            }
+                            } 
                             else{
                                 let result = [];
                                 rawCSV.map((item, index) => {
@@ -167,22 +167,22 @@ const TableUsers = (props) => {
                     <>
                         <label htmlFor='test' className='btn btn-warning'> 
                             <i className='fa-solid fa-file-import'></i> 
-                            Import 
+                            Import
                         </label>
                         <input id="test" type='file' hidden onChange={(e) => handleImportCSV(e)} />
                     </>
                     <>
                         <CSVLink filename={"user.csv"} className='btn btn-primary' data={dataExport} onClick={getUserExport} asyncOnClick={true}> 
-                            <i className='fa-solid fa-file-arrow-down'></i> 
+                            <i className='fa-solid fa-file-arrow-down'></i>
                             Export 
                         </CSVLink>
                     </>
-                    <button className='btn btn-success' onClick={() => setIsShowModalAddNew(true)}> 
-                        Add new user 
+                    <button className='btn btn-success' onClick={() => setIsShowModalAddNew(true)}>
+                        Add new user
                     </button>
                 </div>
             </div>
-            <div className='col-12 sm-4 my-3'>
+            <div className='col-12 col-sm-4 my-3'>
                 <input className='form-control' placeholder='Search user by email...' onChange={(e) => handleSearch(e)} />
             </div>
             <div className='customize-table'>
@@ -221,11 +221,11 @@ const TableUsers = (props) => {
                                     <td> {item.first_name} </td>
                                     <td> {item.last_name} </td>
                                     <td>
-                                        <button className='btn btn-warning mx-3' onClick={() => handleEditUser(item)}> 
-                                            Edit 
+                                        <button className='btn btn-warning mx-3' onClick={() => handleEditUser(item)}>
+                                            Edit
                                         </button>
-                                        <button className='btn btn-danger mx-3' onClick={() => handleDeleteUser(item)}> 
-                                            Delete 
+                                        <button className='btn btn-danger mx-3' onClick={() => handleDeleteUser(item)}>
+                                            Delete
                                         </button>
                                     </td>
                                 </tr>
